@@ -25,6 +25,7 @@
 taiga = @.taiga
 bindOnce = @.taiga.bindOnce
 debounce = @.taiga.debounce
+trim = @.taiga.trim
 
 module = angular.module("taigaIssues")
 
@@ -76,6 +77,39 @@ CreateIssueDirective = ($repo, $confirm, $rootscope, lightboxService, $loading, 
         $scope.addAttachment = (attachment) ->
             attachmentsToAdd = attachmentsToAdd.push(attachment)
 
+        tagsToAdd = []
+
+        $scope.addTag = (tag, color) ->
+            value = trim(tag.toLowerCase())
+
+            tags = $scope.project.tags
+            projectTags = $scope.project.tags_colors
+
+            tags = [] if not tags?
+            projectTags = {} if not projectTags?
+
+            if value not in tags
+                tags.push(value)
+
+            projectTags[tag] = color || null
+
+            $scope.project.tags = tags
+
+            itemtags = _.clone($scope.issue.tags)
+
+            if value not in itemtags
+                itemtags.push(tag)
+                tagsToAdd.push([tag , color])
+                $scope.issue.tags = itemtags
+
+        $scope.deleteTag = (tag) ->
+            value = trim(tag.name.toLowerCase())
+
+            tags = $scope.project.tags
+
+            _.pull(tags, value)
+            _.pull($scope.issue.tags, value)
+
         submit = debounce 2000, (event) =>
             event.preventDefault()
 
@@ -86,7 +120,17 @@ CreateIssueDirective = ($repo, $confirm, $rootscope, lightboxService, $loading, 
                 .target(submitButton)
                 .start()
 
-            promise = $repo.create("issues", $scope.issue)
+            issue = _.clone($scope.issue)
+
+            issue.tags = _.map issue.tags, (tagName) ->
+                tag = _.find tagsToAdd, (tagToAdd) ->
+                    return tagToAdd[0] == tagName
+
+                return tag if tag
+
+                return tagName
+
+            promise = $repo.create("issues", issue)
 
             promise.then (data) ->
                 return createAttachments(data)
@@ -100,7 +144,6 @@ CreateIssueDirective = ($repo, $confirm, $rootscope, lightboxService, $loading, 
             promise.then null, ->
                 currentLoading.finish()
                 $confirm.notify("error")
-
 
         submitButton = $el.find(".submit-button")
 

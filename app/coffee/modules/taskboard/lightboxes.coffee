@@ -25,6 +25,7 @@
 taiga = @.taiga
 bindOnce = @.taiga.bindOnce
 debounce = @.taiga.debounce
+trim = @.taiga.trim
 
 CreateEditTaskDirective = ($repo, $model, $rs, $rootscope, $loading, lightboxService, $translate, $q, attachmentsService) ->
     link = ($scope, $el, attrs) ->
@@ -54,6 +55,39 @@ CreateEditTaskDirective = ($repo, $model, $rs, $rootscope, $loading, lightboxSer
                 return attachmentsService.delete("task", attachment.id)
 
             return $q.all(promises)
+
+        tagsToAdd = []
+
+        $scope.addTag = (tag, color) ->
+            value = trim(tag.toLowerCase())
+
+            tags = $scope.project.tags
+            projectTags = $scope.project.tags_colors
+
+            tags = [] if not tags?
+            projectTags = {} if not projectTags?
+
+            if value not in tags
+                tags.push(value)
+
+            projectTags[tag] = color || null
+
+            $scope.project.tags = tags
+
+            itemtags = _.clone($scope.task.tags)
+
+            if value not in itemtags
+                itemtags.push(tag)
+                tagsToAdd.push([tag , color])
+                $scope.task.tags = itemtags
+
+        $scope.deleteTag = (tag) ->
+            value = trim(tag.name.toLowerCase())
+
+            tags = $scope.project.tags
+
+            _.pull(tags, value)
+            _.pull($scope.task.tags, value)
 
         $scope.$on "taskform:new", (ctx, sprintId, usId) ->
             $scope.task = {

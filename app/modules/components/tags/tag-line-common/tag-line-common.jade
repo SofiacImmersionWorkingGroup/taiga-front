@@ -7,7 +7,7 @@
         tg-tag(
             tag="tag"
             project="vm.project"
-            on-delete-tag="vm.deleteTag(tag)"
+            on-delete-tag="vm.onDeleteTag({tag: tag})"
             has-permissions="{{vm.checkPermissions()}}"
         )
     .tag(
@@ -16,7 +16,7 @@
     )
         tg-tag(
             tag="tag"
-            on-delete-tag="vm.deleteTag(tag)"
+            on-delete-tag="vm.onDeleteTag({tag: tag})"
             has-permissions="{{vm.checkPermissions()}}"
         )
 

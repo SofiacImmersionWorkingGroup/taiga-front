@@ -19,11 +19,34 @@
 
 module = angular.module('taigaCommon')
 
-ColorSelectorDirective = () ->
+ColorSelectorDirective = ($timeout) ->
+    link = (scope, el) ->
+        timeout = null
+
+        cancel = () ->
+            $timeout.cancel(timeout)
+            timeout = null
+
+        close = () ->
+            return if timeout
+
+            timeout = $timeout (() ->
+                scope.vm.displaycolorList = false
+            ), 400
+
+        el.find('.color-selector')
+            .mouseenter(cancel)
+            .mouseleave(close)
+
+        el.find('.color-selector-dropdown')
+            .mouseenter(cancel)
+            .mouseleave(close)
 
     return {
+        link: link,
         scope:{
-            selectedColor: "="
+            onSelectColor: "&",
+            color: "="
         },
         templateUrl:"components/tags/color-selector/color-selector.html",
         controller: "ColorSelectorCtrl",
@@ -31,5 +54,8 @@ ColorSelectorDirective = () ->
         bindToController: true
     }
 
+ColorSelectorDirective.$inject = [
+    "$timeout"
+]
 
 module.directive("tgColorSelector", ColorSelectorDirective)

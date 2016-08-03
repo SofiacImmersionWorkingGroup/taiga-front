@@ -295,6 +295,8 @@ CreateEditUserstoryDirective = ($repo, $model, $rs, $rootScope, lightboxService,
         $scope.deleteAttachment = (attachment) ->
             attachmentsToDelete = attachmentsToDelete.push(attachment)
 
+        tagsToAdd = []
+
         $scope.addTag = (tag, color) ->
             value = trim(tag.toLowerCase())
 
@@ -311,7 +313,12 @@ CreateEditUserstoryDirective = ($repo, $model, $rs, $rootScope, lightboxService,
 
             $scope.project.tags = tags
 
-            $scope.us.tags.push(tag)
+            itemtags = _.clone($scope.us.tags)
+
+            if value not in itemtags
+                itemtags.push(tag)
+                tagsToAdd.push([tag , color])
+                $scope.us.tags = itemtags
 
         $scope.deleteTag = (tag) ->
             value = trim(tag.name.toLowerCase())
@@ -405,11 +412,23 @@ CreateEditUserstoryDirective = ($repo, $model, $rs, $rootScope, lightboxService,
                 .target(submitButton)
                 .start()
 
+            itemtags = _.clone($scope.us.tags)
+            itemtags = _.map itemtags, (tagName) ->
+                tag = _.find tagsToAdd, (tagToAdd) ->
+                    return tagToAdd[0] == tagName
+
+                return tag if tag
+
+                return tagName
+
             if $scope.isNew
-                promise = $repo.create("userstories", $scope.us)
+                promise = $repo.create("userstories", us)
                 broadcastEvent = "usform:new:success"
             else
-                promise = $repo.save($scope.us)
+                us = $scope.us.clone()
+                us.tags = itemtags
+
+                promise = $repo.save(us)
                 broadcastEvent = "usform:edit:success"
 
             promise.then (data) ->

@@ -20,10 +20,9 @@
 module = angular.module('taigaCommon')
 
 TagLineCommonDirective = () ->
-
     link = (scope, el, attr, ctrl) ->
         scope.$watchCollection "vm.type.tags", (tags) ->
-            return if !tags || !tags.length
+            return if !tags
 
             ctrl.tags = ctrl._renderTags(tags, ctrl.project)
 

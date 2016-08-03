@@ -24,7 +24,7 @@ TagLineDirective = () ->
     link = (scope, el, attr, ctrl) ->
         if ctrl.type
             scope.$watchCollection "vm.type.tags", (tags) ->
-                return if not tags.length
+                return if not tags
                 ctrl.tags = ctrl._renderTags(tags, ctrl.project)
 
         unwatch = scope.$watch "vm.project", (project) ->

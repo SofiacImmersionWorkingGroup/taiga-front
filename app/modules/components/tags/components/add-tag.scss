@@ -42,15 +42,18 @@ $tag-input-width: 250px;
         display: flex;
         justify-content: space-between;
         padding: .5rem;
-        &:hover {
+    }
+    .tags-dropdown-color {
+        height: 1rem;
+        width: 1rem;
+    }
+    li {
+        &:hover,
+        &.selected {
             background: lighten($primary-light, 50%);
             cursor: pointer;
             transition: .2s;
             transition-delay: .1s;
         }
-    }
-    .tags-dropdown-color {
-        height: 1rem;
-        width: 1rem;
     }
 }

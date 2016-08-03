@@ -1,8 +1,8 @@
-.color-selector(ng-mouseleave="vm.displaycolorList = false")
+.color-selector
     .tag-color(
         ng-click="vm.toggleColorList()"
-        ng-class="{'empty-color': !vm.selectedColor}"
-        ng-style="{'background': vm.selectedColor}"
+        ng-class="{'empty-color': !vm.color}"
+        ng-style="{'background': vm.color}"
     )
     .color-selector-dropdown(ng-show="vm.displaycolorList")
         ul.color-selector-dropdown-list

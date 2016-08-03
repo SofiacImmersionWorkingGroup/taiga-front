@@ -50,7 +50,7 @@ class ColorSelectorController
         @.displaycolorList = !@.displaycolorList
 
     onSelectDropdownColor: (color) ->
-        @.selectedColor = color
+        @.onSelectColor({color: color})
         @.toggleColorList()
 
 

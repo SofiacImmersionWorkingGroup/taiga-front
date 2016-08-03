@@ -28,6 +28,7 @@ class TagLineCommonController
     ]
 
     constructor: (@tagLineService) ->
+        @.newTag = {name: "", color: ""}
         @.tags = []
         @.colorArray = []
         @.addTag = false
@@ -41,46 +42,30 @@ class TagLineCommonController
     _renderTags: (tags, project) ->
         return @tagLineService.renderTags(tags, project)
 
+    preventCloseLb: (event) ->
+        if event.keyCode == 27 && @.newTag.name.length
+            @.addTag = false
+
+            @.newTag.name = ""
+            @.newTag.color = ""
+
+            event.stopPropagation()
+        else if event.keyCode == 13
+            console.log @.newTag
+            @.addNewTag(@.newTag.name, @.newTag.color)
+            event.preventDefault()
+
     displayTagInput: () ->
         @.addTag = true
 
-    closeTagInput: (event) ->
-        if event.keyCode == 27
-            @.addTag = false
+    addNewTag: (name, color) ->
+        @.newTag.name = ""
+        @.newTag.color = ""
 
-    # onAddTag: (tag, color) ->
-    #     @.loadingAddTag = true
-    #     value = trim(tag.toLowerCase())
+        @.onAddTag({name: name, color: color}) if name.length
 
-    #     tags = @.project.tags
-    #     projectTags = @.project.tags_colors
-
-    #     tags = [] if not tags?
-    #     projectTags = {} if not projectTags?
-
-    #     if value not in tags
-    #         tags.push(value)
-
-    #     projectTags[tag] = color || null
-
-    #     @.project.tags = tags
-    #     @.addTag = false
-    #     @.loadingAddTag = false
-
-    #     @.type.tags.push(tag)
-
-    # onDeleteTag: (tag) ->
-    #     @.loadingRemoveTag = tag.name
-    #     value = trim(tag.name.toLowerCase())
-
-    #     tags = @.project.tags
-
-    #     _.pull(tags, value)
-
-    #     @.loadingRemoveTag = false
-
-    #     console.log @.type.tags
-    #     _.pull(@.type.tags, value)
-    #     console.log @.type.tags
+    selectColor: (color) ->
+        @.newTag.color = color
+        console.log @.newTag
 
 module.controller("TagLineCommonCtrl", TagLineCommonController)
